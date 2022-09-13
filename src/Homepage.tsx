@@ -5,9 +5,9 @@ import { useNavigate, useParams } from "react-router-dom";
 import Avatar from "./styled/Avatar";
 import Card from "./styled/Card";
 import Button from "./styled/Button";
-import Body from "./styled/Body";
 import SideMenu from "./styled/SideMenu";
 import Header from "./styled/Header";
+import Container from "./styled/Container";
 
 export interface Post {
   userId: number;
@@ -116,7 +116,7 @@ export default function Homepage() {
       <Header>
         <div onClick={handleSubmit()}>My App</div>
       </Header>
-      <Body>
+      <Container>
         <SideMenu>
           {posts.map((post) => {
             return <Button onClick={handleClick(post)}>{post.title}</Button>;
@@ -139,7 +139,7 @@ export default function Homepage() {
             );
           })}
         </div>
-      </Body>
+      </Container>
     </div>
   );
 }
