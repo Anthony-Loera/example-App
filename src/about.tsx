@@ -1,7 +1,11 @@
 import React from "react";
-import "./App.css";
+import ".//App.css";
 import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
+import Button from "./styled/Button";
+import Author from "./styled/Author";
+import AuthorPosts from "./styled/AuthorPosts";
+import Header from "./styled/Header";
 
 export interface Post {
   userId: number;
@@ -16,7 +20,7 @@ export interface User {
   email: string;
 }
 
-function About() {
+export default function About() {
   const params = useParams<{ id: string }>();
   const [post, setPost] = useState<Post>();
   const [postList, setPostList] = useState<Post[]>();
@@ -39,7 +43,6 @@ function About() {
 
   useEffect(() => {
     if (!post) return;
-    console.log(post.userId);
     fetch("https://jsonplaceholder.typicode.com/users/" + post.userId)
       .then((response) => {
         return response.json();
@@ -61,32 +64,29 @@ function About() {
         setPostList(listPosts);
       });
   }, [author]);
-  console.log(postList);
 
   return (
-    <div className="container">
-      <header className="App-header">
+    <div>
+      <Header>
         <div>My App</div>
-      </header>
-      <div className="Author">
+      </Header>
+      <Author>
         <h2>{author?.name}</h2>
         <h3>{author?.username}</h3>
         <h3>{author?.email}</h3>
-      </div>
-      <div className="authorPosts">
+      </Author>
+      <AuthorPosts>
         {postList?.map((list: Post) => {
           return (
             <div>
-              <button onClick={handleClick(list.id)} className="btn">
-                <h3 className="authorPosts">{list.title}</h3>
-              </button>
+              <Button onClick={handleClick(list.id)}>
+                <h3>{list.title}</h3>
+              </Button>
               <p> {list.body}</p>
             </div>
           );
         })}
-      </div>
+      </AuthorPosts>
     </div>
   );
 }
-
-export default About;
