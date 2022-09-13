@@ -2,10 +2,12 @@ import React from "react";
 import ".//App.css";
 import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
-import Button from "./styled/Button";
 import Author from "./styled/Author";
 import AuthorPosts from "./styled/AuthorPosts";
-import Header from "./styled/Header";
+import AppBar from "@mui/material/AppBar";
+import Typography from "@mui/material/Typography";
+import List from "@mui/material/List";
+import ListItemButton from "@mui/material/ListItemButton";
 
 export interface Post {
   userId: number;
@@ -38,6 +40,9 @@ export default function About() {
       })
       .then((p) => {
         setPost(p);
+      })
+      .catch((error) => {
+        console.log(error);
       });
   }, [params.id]);
 
@@ -49,6 +54,9 @@ export default function About() {
       })
       .then((user) => {
         setAuthor(user);
+      })
+      .catch((error) => {
+        console.log(error);
       });
   }, [post]);
 
@@ -62,31 +70,36 @@ export default function About() {
           (postList: Post) => postList.userId === author?.id
         );
         setPostList(listPosts);
+      })
+      .catch((error) => {
+        console.log(error);
       });
   }, [author]);
 
   return (
     <div>
-      <Header>
-        <div>My App</div>
-      </Header>
-      <Author>
-        <h2>{author?.name}</h2>
-        <h3>{author?.username}</h3>
-        <h3>{author?.email}</h3>
-      </Author>
-      <AuthorPosts>
-        {postList?.map((list: Post) => {
-          return (
-            <div>
-              <Button onClick={handleClick(list.id)}>
-                <h3>{list.title}</h3>
-              </Button>
-              <p> {list.body}</p>
-            </div>
-          );
-        })}
-      </AuthorPosts>
+      <AppBar style={{ padding: 25 }}>
+        <Typography>My App</Typography>
+      </AppBar>
+      <div style={{ paddingTop: 60 }}>
+        <Author>
+          <h2>{author?.name}</h2>
+          <h3>{author?.username}</h3>
+          <h3>{author?.email}</h3>
+        </Author>
+        <AuthorPosts>
+          {postList?.map((list: Post) => {
+            return (
+              <List key={list.id}>
+                <ListItemButton onClick={handleClick(list.id)}>
+                  <h3>{list.title}</h3>
+                </ListItemButton>
+                <p> {list.body}</p>
+              </List>
+            );
+          })}
+        </AuthorPosts>
+      </div>
     </div>
   );
 }
