@@ -1,7 +1,6 @@
 import React from "react";
 import ".//App.css";
 import { useEffect, useState } from "react";
-import { useNavigate, useParams } from "react-router-dom";
 import Avatar from "@mui/material/Avatar";
 import Card from "@mui/material/Card";
 import AppBar from "@mui/material/AppBar";
@@ -33,12 +32,10 @@ interface Comment {
 }
 
 export default function Homepage() {
-  const params = useParams<{ id: string }>();
   const [posts, setPosts] = useState<Post[]>([]);
   const [user, setUser] = useState<User>();
   const [activePost, setActivePost] = useState<Post>();
   const [comments, setComments] = useState<Comment[]>([]);
-  const navigate = useNavigate();
 
   useEffect(() => {
     fetch("https://jsonplaceholder.typicode.com/posts")
