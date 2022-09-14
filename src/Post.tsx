@@ -32,13 +32,60 @@ interface Comment {
   body: string;
 }
 
-export default function Homepage() {
+export default function PostView() {
   const params = useParams<{ id: string }>();
   const [posts, setPosts] = useState<Post[]>([]);
   const [user, setUser] = useState<User>();
   const [activePost, setActivePost] = useState<Post>();
   const [comments, setComments] = useState<Comment[]>([]);
   const navigate = useNavigate();
+
+  const handleSubmit = () => {
+    navigate(`/`);
+  };
+
+  useEffect(() => {
+    console.log(params.id);
+    if (params.id !== undefined) {
+      fetch("https://jsonplaceholder.typicode.com/posts/" + params.id)
+        .then((response) => {
+          return response.json();
+        })
+        .then((data) => {
+          setActivePost(data);
+        })
+        .catch((error) => {
+          console.log(error);
+        });
+    }
+  }, [params.id]);
+
+  useEffect(() => {
+    if (activePost) {
+      fetch("https://jsonplaceholder.typicode.com/users/" + activePost?.userId)
+        .then((response) => {
+          return response.json();
+        })
+        .then((user) => {
+          setUser(user);
+        })
+        .catch((error) => {
+          console.log(error);
+        });
+
+      fetch("https://jsonplaceholder.typicode.com/comments")
+        .then((response) => response.json())
+        .then((comments) => {
+          const activeComments = comments.filter(
+            (comment: Comment) => comment.postId === Number(activePost?.id)
+          );
+          setComments(activeComments);
+        })
+        .catch((error) => {
+          console.log(error);
+        });
+    }
+  }, [activePost]);
 
   useEffect(() => {
     fetch("https://jsonplaceholder.typicode.com/posts")
@@ -83,7 +130,7 @@ export default function Homepage() {
   return (
     <div>
       <AppBar style={{ padding: 25 }}>
-        <Typography>My App</Typography>
+        <Typography onClick={handleSubmit}>My App</Typography>
       </AppBar>
       <Grid style={{ paddingTop: 55 }} container>
         <Grid item sm={12} md={12} lg={4}>
