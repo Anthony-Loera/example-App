@@ -1,81 +1,83 @@
-import React from "react";
-import ".//App.css";
-import { useEffect, useState } from "react";
-import Avatar from "@mui/material/Avatar";
-import Card from "@mui/material/Card";
-import AppBar from "@mui/material/AppBar";
-import Typography from "@mui/material/Typography";
-import List from "@mui/material/List";
-import ListItemButton from "@mui/material/ListItemButton";
-import Grid from "@mui/material/Grid";
+import React, { ReactElement, useEffect, useState } from 'react'
+import './/App.css'
+import Avatar from '@mui/material/Avatar'
+import Card from '@mui/material/Card'
+import AppBar from '@mui/material/AppBar'
+import Typography from '@mui/material/Typography'
+import List from '@mui/material/List'
+import ListItemButton from '@mui/material/ListItemButton'
+import Grid from '@mui/material/Grid'
+import { useNavigate } from 'react-router-dom'
 
 export interface Post {
-  userId: number;
-  id: number;
-  title: string;
-  body: string;
+  userId: number
+  id: number
+  title: string
+  body: string
 }
 
 export interface User {
-  id: number;
-  name: string;
-  username: string;
-  email: string;
+  id: number
+  name: string
+  username: string
+  email: string
 }
 
 interface Comment {
-  postId: number;
-  id: number;
-  name: string;
-  email: string;
-  body: string;
+  postId: number
+  id: number
+  name: string
+  email: string
+  body: string
 }
 
-export default function Homepage() {
-  const [posts, setPosts] = useState<Post[]>([]);
-  const [user, setUser] = useState<User>();
-  const [activePost, setActivePost] = useState<Post>();
-  const [comments, setComments] = useState<Comment[]>([]);
+export default function Homepage(): ReactElement {
+  const [posts, setPosts] = useState<Post[]>([])
+  const [user, setUser] = useState<User>()
+  const [activePost, setActivePost] = useState<Post>()
+  const [comments, setComments] = useState<Comment[]>([])
+  const navigate = useNavigate()
 
   useEffect(() => {
-    fetch("https://jsonplaceholder.typicode.com/posts")
-      .then((response) => {
-        return response.json();
+    fetch('https://jsonplaceholder.typicode.com/posts')
+      .then(async (response) => {
+        return await response.json()
       })
       .then((data) => {
-        setPosts(data);
+        setPosts(data)
       })
       .catch((error) => {
-        console.log(error);
-      });
-  }, []);
+        console.log(error)
+      })
+  }, [])
 
   const handleClick = (post: Post) => () => {
-    setActivePost(post);
-
-    fetch("https://jsonplaceholder.typicode.com/users/" + post.userId)
-      .then((response) => {
-        return response.json();
+    setActivePost(post)
+    navigate(`/post/${post.id}`)
+    // file deepcode ignore Ssrf: <work on later>
+    fetch(`https://jsonplaceholder.typicode.com/users/${post.userId}`)
+      .then(async (response) => {
+        return await response.json()
       })
       .then((users) => {
-        setUser(users);
+        setUser(users)
       })
       .catch((error) => {
-        console.log(error);
-      });
+        console.log(error)
+      })
 
-    fetch("https://jsonplaceholder.typicode.com/comments")
-      .then((response) => response.json())
+    fetch('https://jsonplaceholder.typicode.com/comments')
+      .then(async (response) => await response.json())
       .then((comments) => {
         const filteredComments = comments.filter(
           (comment: Comment) => comment.postId === Number(post.id)
-        );
-        setComments(filteredComments);
+        )
+        setComments(filteredComments)
       })
       .catch((error) => {
-        console.log(error);
-      });
-  };
+        console.log(error)
+      })
+  }
 
   return (
     <div>
@@ -90,17 +92,19 @@ export default function Homepage() {
                 <ListItemButton key={post.id} onClick={handleClick(post)}>
                   {post.title}
                 </ListItemButton>
-              );
+              )
             })}
           </List>
         </Grid>
         <Grid item sm={12} md={6} lg={4}>
-          <Card style={{ textAlign: "center", maxHeight: 800 }}>
+          <Card style={{ textAlign: 'center', maxHeight: 800 }}>
             <img alt="'random" src="https://picsum.photos/500/600" />
             <h3>{activePost?.title}</h3>
             <h5>{activePost?.body}</h5>
-            {/* deepcode ignore DOMXSS: <it works> */}
-            <a href={`/user/${activePost?.id}`}>{user?.name}</a>
+            {activePost !== undefined && (
+              // deepcode ignore DOMXSS: <later>
+              <a href={`/user/${activePost.id}`}>{user?.name}</a>
+            )}
           </Card>
         </Grid>
         <Grid item sm={12} md={6} lg={4}>
@@ -112,11 +116,11 @@ export default function Homepage() {
                   <h3>{info.name}</h3>
                   <p>{info.body}</p>
                 </List>
-              );
+              )
             })}
           </div>
         </Grid>
       </Grid>
     </div>
-  );
+  )
 }

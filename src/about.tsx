@@ -1,80 +1,81 @@
-import React from "react";
-import ".//App.css";
-import { useEffect, useState } from "react";
-import { useNavigate, useParams } from "react-router-dom";
-import Author from "./styled/Author";
-import AuthorPosts from "./styled/AuthorPosts";
-import AppBar from "@mui/material/AppBar";
-import Typography from "@mui/material/Typography";
-import List from "@mui/material/List";
-import ListItemButton from "@mui/material/ListItemButton";
+import React, { ReactElement, useEffect, useState } from 'react'
+import './/App.css'
+import { useNavigate, useParams } from 'react-router-dom'
+import Author from './styled/Author'
+import AuthorPosts from './styled/AuthorPosts'
+import AppBar from '@mui/material/AppBar'
+import Typography from '@mui/material/Typography'
+import List from '@mui/material/List'
+import ListItemButton from '@mui/material/ListItemButton'
 
 export interface Post {
-  userId: number;
-  id: number;
-  title: string;
-  body: string;
+  userId: number
+  id: number
+  title: string
+  body: string
 }
 export interface User {
-  id: number;
-  name: string;
-  username: string;
-  email: string;
+  id: number
+  name: string
+  username: string
+  email: string
 }
 
-export default function About() {
-  const params = useParams<{ id: string }>();
-  const [post, setPost] = useState<Post>();
-  const [postList, setPostList] = useState<Post[]>();
-  const [author, setAuthor] = useState<User>();
-  const navigate = useNavigate();
+export default function About(): ReactElement {
+  const params = useParams<{ id: string }>()
+  const [post, setPost] = useState<Post>()
+  const [postList, setPostList] = useState<Post[]>()
+  const [author, setAuthor] = useState<User>()
+  const navigate = useNavigate()
 
   const handleClick = (id: number) => () => {
-    navigate(`/post/${id}`);
-  };
+    navigate(`/post/${id}`)
+  }
 
   useEffect(() => {
-    fetch("https://jsonplaceholder.typicode.com/posts/" + params.id)
-      .then((response) => {
-        return response.json();
+    if (params.id === undefined) return
+    fetch(`https://jsonplaceholder.typicode.com/posts/${params.id}`)
+      .then(async (response) => {
+        return await response.json()
       })
       .then((p) => {
-        setPost(p);
+        setPost(p)
       })
       .catch((error) => {
-        console.log(error);
-      });
-  }, [params.id]);
+        console.log(error)
+      })
+  }, [params.id])
 
   useEffect(() => {
-    if (!post) return;
-    fetch("https://jsonplaceholder.typicode.com/users/" + post.userId)
-      .then((response) => {
-        return response.json();
+    if (post == null) return
+    // deepcode ignore Ssrf: <work on later>
+    fetch(`https://jsonplaceholder.typicode.com/users/${post.userId}`)
+      .then(async (response) => {
+        return await response.json()
       })
       .then((user) => {
-        setAuthor(user);
+        setAuthor(user)
       })
       .catch((error) => {
-        console.log(error);
-      });
-  }, [post]);
+        console.log(error)
+      })
+  }, [post])
 
   useEffect(() => {
-    fetch("https://jsonplaceholder.typicode.com/posts")
-      .then((response) => {
-        return response.json();
+    fetch('https://jsonplaceholder.typicode.com/posts')
+      .then(async (response) => {
+        return await response.json()
       })
       .then((posts) => {
         const listPosts = posts.filter(
           (postList: Post) => postList.userId === author?.id
-        );
-        setPostList(listPosts);
+        )
+        setPostList(listPosts)
       })
       .catch((error) => {
-        console.log(error);
-      });
-  }, [author]);
+        console.log(error)
+      })
+  }, [author])
 
   return (
     <div>
@@ -96,10 +97,10 @@ export default function About() {
                 </ListItemButton>
                 <p> {list.body}</p>
               </List>
-            );
+            )
           })}
         </AuthorPosts>
       </div>
     </div>
-  );
+  )
 }
